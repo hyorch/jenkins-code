@@ -18,7 +18,7 @@ pipeline {
                 scannerHome = tool 'Sonarqube-Tool';
             }
             steps{
-                withSonarQubeEnv() {
+                withSonarQubeEnv(credentialsId: 'sonarqube', installationName: 'Sonarqube-hyorch') {
                     sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
