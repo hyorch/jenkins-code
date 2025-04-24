@@ -7,40 +7,18 @@ pipeline {
                 sh 'echo "Preparing environment..."'
             }
         }
-        stage('Show Version') {
-            steps {
-                sh 'ls -la'
+      
+        stage('SCM') {
+            checkout scm
+        }
+        stage('SonarQube Analysis') {
+            def scannerHome = tool 'Sonarqube-Tool';
+            withSonarQubeEnv() {
+                sh "${scannerHome}/bin/sonar-scanner"
             }
         }
-        stage('Build') {
-            steps {
-                sh 'echo "Building..."'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'echo "Testing..."'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh 'echo "Deploying..."'
-            }
-        }
-        stage('Cleanup') {
-            steps {
-                sh 'echo "Cleaning up..."'
-            }
-        }
-        stage('Post Actions') {
-            steps {
-                sh 'echo "Performing post actions..."'
-            }
-        }
-        stage('Notify') {
-            steps {
-                sh 'echo "Notifying..."'
-            }
-        }
+       
+       
+        
     }
 }
