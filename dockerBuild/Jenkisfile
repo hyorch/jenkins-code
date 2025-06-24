@@ -1,0 +1,28 @@
+// Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Prepare Environment') {
+            steps {
+                sh 'echo "Preparing environment..."'
+            }
+        }
+        
+        
+        stage('Deploy to EC2') {
+            steps {
+                sh 'echo "Deploying to EC2 instance..."'                
+                // use Jenkins credentials to securely handle SSH keys
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws', keyFileVariable: 'SSH_KEY')]) {
+                    // Use the SSH key to connect to the EC2 instance and run the deployment script
+                    sh 'ssh -i $SSH_KEY ec2user@ec2-18-101-143-78.eu-south-2.compute.amazonaws.com "cd /home/ec2-user && ./hola.sh"'
+                }
+                
+            }
+        }
+
+    
+    }
+
+}
