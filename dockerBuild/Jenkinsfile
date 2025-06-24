@@ -16,7 +16,7 @@ pipeline {
                 // use Jenkins credentials to securely handle SSH keys
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws', keyFileVariable: 'SSH_KEY')]) {
                     // Use the SSH key to connect to the EC2 instance and run the deployment script
-                    sh '''
+                    sh '''                   
                     ssh -i $SSH_KEY ec2-user@ec2-18-101-143-78.eu-south-2.compute.amazonaws.com "cd /home/ec2-user && ./hola.sh"
                     '''
                                         
