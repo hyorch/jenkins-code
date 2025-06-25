@@ -36,11 +36,7 @@ pipeline {
                 sh """
                 ls
                 cd dockerBuild
-                docker build -t my-docker-image:latest .
-                #docker tag my-docker-image:latest 123456789012.dkr.ecr.eu-south-2.amazonaws.com/my-docker-image:latest
-                #docker login --username AWS --password $(aws ecr get-login-password --region eu-south-2) 123456789012.dkr.ecr.eu-south-2.amazonaws.com
-                #docker push 123456789012.dkr.ecr.eu-south-2.amazonaws.com/my-docker-image:latest
-
+                docker build -t my-docker-image:latest .                
                 """
             }
         }
