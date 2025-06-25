@@ -10,7 +10,7 @@ pipeline {
         }
         
         
-        stage('Deploy to EC2') {
+        stage('Connect SSH to EC2') {
             steps {
                 sh 'echo "Deploying to EC2 instance..."'                
                 // use Jenkins credentials to securely handle SSH keys
@@ -27,6 +27,27 @@ pipeline {
                                         
                 }
                 
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'echo "Building Docker image..."'
+                // Build the Docker image
+                sh """
+                ls
+                cd dockerBuild
+                docker build -t my-docker-image:latest .
+                #docker tag my-docker-image:latest 123456789012.dkr.ecr.eu-south-2.amazonaws.com/my-docker-image:latest
+                #docker login --username AWS --password $(aws ecr get-login-password --region eu-south-2) 123456789012.dkr.ecr.eu-south-2.amazonaws.com
+                #docker push 123456789012.dkr.ecr.eu-south-2.amazonaws.com/my-docker-image:latest
+
+                """
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                sh 'echo "Pushing Docker image to registry..."'
+                 
             }
         }
 
