@@ -1,5 +1,5 @@
 # Jenkins Configuration
 
 - Install suggested plugins
-- Install Docker plugin
-- SSH Keys. Administrar Jenkins -> Credentials -> Global -> SSH Username with private key (no poner nombre)
+- Install plugins:  Docker plugin, BlueOcean
+- SSH Keys. Administrar Jenkins -> Credentials -> Global -> SSH Username with private key
