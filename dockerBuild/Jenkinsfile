@@ -1,7 +1,7 @@
 // Jenkinsfile
 pipeline {
     agent {
-        label ''docker-basic-agent'
+        label 'docker-basic-agent'
     }
 
     stages {
