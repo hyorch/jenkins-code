@@ -28,3 +28,4 @@ RUN curl -L "https://github.com/docker/compose/releases/download/2.37.3/docker-c
 RUN mkdir -p /var/lib/docker
 VOLUME /var/lib/docker
 
+USER jenkins

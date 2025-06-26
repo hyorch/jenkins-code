@@ -1,8 +1,8 @@
 // Jenkinsfile
 pipeline {
     agent {
-        //label 'jenkins-agent-docker'
-        label 'jenkins-agent-docker || docker-container'
+        label 'docker-container'
+        //label 'jenkins-agent-docker || docker-container'
     }
 
     stages {
