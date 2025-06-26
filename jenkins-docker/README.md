@@ -22,7 +22,24 @@ Añadir templates teniendo la imagen el agente de jenkins jenkins/inbound-agent:
     }
 ```
 
-# dind
+## Template
+
+- image: hyorch/jenkins-agent-docker:0.0.1
+
+- Run container privileged
+
+
+- Mounts: type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock
+
+
+
+## Permanent Agent
+Ejecutar con docker-compose añadiendo las variables de URL, NAME y SECRET en el entorno para que conecte el agente al arrancar.
+
+
+
+https://volito.digital/how-to-add-a-jenkins-agent-using-docker-compose/
+# docs
 
 Crear imagen agente dind usando Cloud:
 https://medium.com/@haroldfinch01/docker-in-docker-jenkins-agent-46014bfd3a03

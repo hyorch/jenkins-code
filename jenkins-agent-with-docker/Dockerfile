@@ -14,10 +14,10 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
   https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 
-RUN apt-get update && apt-get install -y docker-ce-cli
+RUN apt-get update && apt-get install -y docker-ce-cli docker-ce
 
 # Configure Docker to run as non-root user
-RUN groupadd docker
+#RUN groupadd docker
 RUN usermod -aG docker jenkins
 
 # Install Docker Compose
@@ -27,3 +27,4 @@ RUN curl -L "https://github.com/docker/compose/releases/download/2.37.3/docker-c
 # Enable DinD
 RUN mkdir -p /var/lib/docker
 VOLUME /var/lib/docker
+
