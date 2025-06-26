@@ -6,6 +6,9 @@
 
 # Cloud
 Crear cloud, tipo Docker, conectar a - /var/run/docker.sock:/var/run/docker.sock    
+```bash
+sudo chmod 666 /var/run/docker.sock
+```
 Añadir templates teniendo la imagen el agente de jenkins jenkins/inbound-agent:latest y una etiqueta para filtrar la imagen
 ```groovy
  agent {
