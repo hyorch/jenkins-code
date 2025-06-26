@@ -4,8 +4,64 @@
 - Install plugins:  Docker plugin(duda), BlueOcean, Pipeline Stage View, Docker pipeline(si docker local)
 - SSH Keys. Administrar Jenkins -> Credentials -> Global -> SSH Username with private key
 
-# Cloud
+## Construir agente Jenkins con Docker
+
+```Dockerfile
+FROM jenkins/inbound-agent:latest
+
+# Install Docker
+USER root
+RUN apt-get update && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common lsb-release
+
+RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+  https://download.docker.com/linux/debian/gpg
+
+RUN echo "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+  https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
+RUN apt-get update && apt-get install -y docker-ce-cli docker-ce
+
+# Configure Docker to run as non-root user
+#RUN groupadd docker
+RUN usermod -aG docker jenkins
+
+# Install Docker Compose
+RUN curl -L "https://github.com/docker/compose/releases/download/2.37.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+# Enable DinD
+RUN mkdir -p /var/lib/docker
+VOLUME /var/lib/docker
+
+USER jenkins
+```
+
+## Permisos
+Agent
+```bash
+jenkins:x:1000:
+docker:x:995:jenkins
+```
+
+Jenkins
+```bash
+jenkins:x:1000:
+```
+
+Host Local
+```bash
+jpastor:x:1000:
+docker:x:1001:jpastor
+```
+
+
+## Cloud
 Crear cloud, tipo Docker, conectar a - /var/run/docker.sock:/var/run/docker.sock    
+
+Si no está bien conectado el usuario jenkins del contendor con el grupo docker
 ```bash
 sudo chmod 666 /var/run/docker.sock
 ```
@@ -22,7 +78,7 @@ Añadir templates teniendo la imagen el agente de jenkins jenkins/inbound-agent:
     }
 ```
 
-## Template
+### Template
 
 - image: hyorch/jenkins-agent-docker:0.0.1
 
@@ -39,6 +95,9 @@ Ejecutar con docker-compose añadiendo las variables de URL, NAME y SECRET en el
 
 
 https://volito.digital/how-to-add-a-jenkins-agent-using-docker-compose/
+
+
+
 # docs
 
 Crear imagen agente dind usando Cloud:
