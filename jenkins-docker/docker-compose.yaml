@@ -1,46 +1,45 @@
-# Docker-compose file for Jenkins with Docker support
+# Docker-compose file for Jenkins with Docker support# Docker compose file for Jenkins CI/CD
 services:
   jenkins:
     image: jenkins/jenkins:lts
-    container_name: jenkins
-    
     ports:
-      - "8080:8080"
-      - "50000:50000"
-    
+      - '8090:8080'
+      - '50000:50000'
+
+    environment:
+      - JAVA_OPTS=-Duser.timezone=Europe/Madrid
     volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock   
-      #- jenkins_plugins:/usr/share/jenkins/ref/plugins
-      - ./plugins.txt:/usr/share/jenkins/plugins.txt
-    
-    command: >
-      /bin/sh -c "jenkins-plugin-cli --verbose -f /usr/share/jenkins/plugins.txt \
-      && java -jar /usr/share/jenkins/jenkins.war --httpPort=8080"
-    
-    networks:
-      - jenkins_network
-  
-  docker:
-    image: docker:20.10.7
-    container_name: docker
-    volumes:
+      - /var/opt/jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - jenkins_network
+    restart: unless-stopped
+
+  
+  docker-agent:
+    depends_on:
+      - jenkins
+    image: jenkins-docker-agent:0.0.1 #nombre y versión de la imagen creada anteriormente
+
+    environment:
+      - JENKINS_URL=http://jenkins:8080
+      - JENKINS_SECRET=839axxxxxxxxab #secret obtenido
+      - JENKINS_AGENT_NAME=Nodo-Docker # nombre del nodod
+
+    volumes:
+      - /var/opt/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    
+    privileged: true
+
+    networks:
+      - jenkins_network
+    restart: unless-stopped
+
 
 networks:
   jenkins_network:
     driver: bridge
-
-volumes:
-  jenkins_home:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/opt/jenkins_home
-      o: bind
-  jenkins_plugins:
  
 
 # To run this setup, use the command:

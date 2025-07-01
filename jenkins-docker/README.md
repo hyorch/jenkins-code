@@ -6,6 +6,8 @@
 
 ## Construir agente Jenkins con Docker
 
+Generar agente Jenkins con capacidad para construir contenedores.
+
 ```Dockerfile
 FROM jenkins/inbound-agent:latest
 
@@ -25,7 +27,8 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
 RUN apt-get update && apt-get install -y docker-ce-cli docker-ce
 
 # Configure Docker to run as non-root user
-#RUN groupadd docker
+# Set the group ID for the docker group to match the host's docker group
+#RUN groupmod -g 122 docker
 RUN usermod -aG docker jenkins
 
 # Install Docker Compose
@@ -38,27 +41,19 @@ VOLUME /var/lib/docker
 
 USER jenkins
 ```
-
-## Permisos
-Agent
-```bash
-jenkins:x:1000:
-docker:x:995:jenkins
-```
-
-Jenkins
-```bash
-jenkins:x:1000:
-```
-
-Host Local
-```bash
-jpastor:x:1000:
-docker:x:1001:jpastor
-```
+## Permisos /var/run/docker.sock
+El usuario que ejecuta el agent de jenkins, ha de pertenecer al ID del grupo Docker del host que ejecuta Docker.
 
 
-## Cloud
+## Docker Permanent Agent
+Ejecutar con docker-compose añadiendo las variables de URL, NAME y SECRET en el entorno para que conecte el agente al arrancar.
+
+
+
+https://volito.digital/how-to-add-a-jenkins-agent-using-docker-compose/
+
+
+## Docker Cloud
 Crear cloud, tipo Docker, conectar a - /var/run/docker.sock:/var/run/docker.sock    
 
 Si no está bien conectado el usuario jenkins del contendor con el grupo docker
@@ -89,16 +84,11 @@ Añadir templates teniendo la imagen el agente de jenkins jenkins/inbound-agent:
 
 
 
-## Permanent Agent
-Ejecutar con docker-compose añadiendo las variables de URL, NAME y SECRET en el entorno para que conecte el agente al arrancar.
 
 
 
-https://volito.digital/how-to-add-a-jenkins-agent-using-docker-compose/
 
-
-
-# docs
+## +info
 
 Crear imagen agente dind usando Cloud:
 https://medium.com/@haroldfinch01/docker-in-docker-jenkins-agent-46014bfd3a03

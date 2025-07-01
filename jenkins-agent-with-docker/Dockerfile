@@ -1,4 +1,3 @@
-# Use the official Jenkins agent image as the base
 FROM jenkins/inbound-agent:latest
 
 # Install Docker
@@ -17,7 +16,8 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
 RUN apt-get update && apt-get install -y docker-ce-cli docker-ce
 
 # Configure Docker to run as non-root user
-#RUN groupadd docker
+# Set the group ID for the docker group to match the host's docker group
+#RUN groupmod -g 122 docker
 RUN usermod -aG docker jenkins
 
 # Install Docker Compose
