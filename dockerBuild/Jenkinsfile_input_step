@@ -1,0 +1,24 @@
+// Jenkinsfile tha read environment and version variable from user input and print it in next stage
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: 'dev\npre\npro', description: 'Environment to deploy to')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version of the application')
+    }       
+    stages {
+        stage('Prepare Environment') {
+            steps {
+                sh 'echo "Preparing environment..."'
+            }
+        }
+        
+        stage('Print Parameters') {
+            steps {
+                script {
+                    echo "Deploying to environment: ${params.ENVIRONMENT}"
+                    echo "Application version: ${params.VERSION}"
+                }
+            }
+        }
+    }        
+}
