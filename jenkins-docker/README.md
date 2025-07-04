@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y docker-ce-cli docker-ce
 
 # Configure Docker to run as non-root user
 # Set the group ID for the docker group to match the host's docker group
-#RUN groupmod -g 122 docker
+RUN groupmod -g 1001 docker
 RUN usermod -aG docker jenkins
 
 # Install Docker Compose

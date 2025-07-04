@@ -1,0 +1,81 @@
+# Docker compose file for Jenkins CI/CD
+services:
+  jenkins:
+    build:
+      context: ./jenkins/
+      dockerfile: Dockerfile
+    image: jenkins/jenkins:lts
+    ports:
+      - '8090:8080'
+      - '50000:50000'
+    
+    environment:
+      - JAVA_OPTS=-Duser.timezone=Europe/Madrid
+    volumes:
+      - /var/opt/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock 
+    networks:
+      - jenkins_network
+    
+    restart: unless-stopped
+  
+  docker-agent:
+    depends_on:
+      - jenkins
+    image: jenkins-agent-docker:0.0.2
+
+    environment:
+      - JENKINS_URL=http://jenkins:8080 
+      - JENKINS_SECRET=839adf9739e6550f5f80b0ab02730d0f589c07f55da4037abdcb62d55d6ffabd
+      - JENKINS_AGENT_NAME=docker-container
+
+    volumes:
+      - /var/opt/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    
+    privileged: true
+
+    networks:
+      - jenkins_network
+    restart: unless-stopped
+
+  dd-agent:
+    image: datadog/agent:latest
+
+    depends_on:
+      - jenkins
+      - docker-agent
+
+    cgroup: host
+    privileged: true
+    pid: host
+    
+    environment:
+      - DD_API_KEY=8e91753b2a68b76c8e2e0771b3a73c19
+      - DD_HOSTNAME=jenkins-jpastor-agent
+      - DD_TAGS="application:jenkins"
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_DOGSTATSD_ORIGIN_DETECTION_CLIENT=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_PROCFS_PATH=/proc
+
+    ports:
+      - '8125:8125/udp'      
+      - '8126:8126/tcp'
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /etc/os-release:/host/etc/os-release:ro
+    networks:
+      - jenkins_network
+    restart: unless-stopped
+    
+
+  
+networks:
+  jenkins_network:
+    driver: bridge
